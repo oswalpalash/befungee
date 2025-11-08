@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
@@ -25,7 +25,7 @@ def main():
     (options, args) = parser.parse_args()
     
     if options.version:
-        print "befungee", __version__
+        print("befungee", __version__)
         return 0
     
     if options.mode == "b93":
@@ -35,7 +35,7 @@ def main():
         board = boards.ConcurrentBefunge93Board(options.width, options.height, options.debug, options.debugdelay)
         board.pointers[0].x, board.pointers[0].y = options.x, options.y
     else:
-        print "Mode not supported"
+        print("Mode not supported")
         return 1
     
     # Default to reading from stdin
@@ -50,7 +50,7 @@ def main():
         try:
             infile = open(args[0], 'r')
         except IOError:
-            print "Could not open file"
+            print("Could not open file")
             return 1
     
     x = y = 0
@@ -64,7 +64,7 @@ def main():
             x = 0
             continue
         if x > options.width or y > options.height:
-            print "File too large"
+            print("File too large")
             return 1
         board.put(x, y, c)
         x += 1
@@ -77,10 +77,10 @@ def main():
     while not board.dead():
         try:
             board.step()
-        except Exception, ex:
+        except Exception as ex:
             # Make sure stdout is not redirected
             sys.stdout = sys.__stdout__
-            print "Error (%d,%d):" % (board.pointer.x, board.pointer.y), ex
+            print("Error (%d,%d):" % (board.pointer.x, board.pointer.y), ex)
             return 1
     
     return 0

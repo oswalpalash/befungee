@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 class Stack:
@@ -40,4 +40,3 @@ class Pointer:
     def move(self):
         self.x += self.dx
         self.y += self.dy
-

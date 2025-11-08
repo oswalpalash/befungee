@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -6,7 +6,7 @@ import random
 import sys
 import time
 
-from StringIO import StringIO
+from io import StringIO
 
 from funge import Pointer
 
@@ -86,7 +86,11 @@ class Befunge93Board:
         elif c == '/':
             a = self.pointer.stack.pop()
             b = self.pointer.stack.pop()
-            self.pointer.stack.push(b / a)
+            # Befunge-93 integer division (truncate toward zero)
+            if a == 0:
+                self.pointer.stack.push(0)
+            else:
+                self.pointer.stack.push(int(b / a))
         elif c == '%':
             a = self.pointer.stack.pop()
             b = self.pointer.stack.pop()
@@ -154,7 +158,7 @@ class Befunge93Board:
             x = self.pointer.stack.pop()
             self.pointer.stack.push(ord(self.get(x, y)))
         elif c == '&':
-            x = raw_input()
+            x = input()
             try:
                 self.pointer.stack.push(int(x))
             except ValueError:
@@ -189,8 +193,8 @@ class Befunge93Board:
             # Clear screen
             if os.name == "posix":
                 sys.stdout.write("\x1b[H\x1b[2J")
-            print "Pointer: x=%d y=%d dx=%d dy=%d stringmode=%s" % (self.pointer.x, self.pointer.y, self.pointer.dx, self.pointer.dy, self.pointer.stringmode)
-            print "Board:"
+            print("Pointer: x=%d y=%d dx=%d dy=%d stringmode=%s" % (self.pointer.x, self.pointer.y, self.pointer.dx, self.pointer.dy, self.pointer.stringmode))
+            print("Board:")
             for y in range(self.height):
                 for x in range(self.width):
                     c = self.get(x, y)
@@ -201,11 +205,11 @@ class Befunge93Board:
                     if os.name == "posix":
                         sys.stdout.write("\033[0m")
                 sys.stdout.write('\n')
-            print "Stack:"
-            print self.pointer.stack._list
-            print "Output:"
+            print("Stack:")
+            print(self.pointer.stack._list)
+            print("Output:")
             self.debugstream.seek(0)
-            print self.debugstream.read()
+            print(self.debugstream.read())
             if self.debug_delay == -1:
                 sys.stdin.read(1)
             else:
@@ -338,14 +342,17 @@ class ConcurrentBefunge93Board(Befunge93Board):
                 x = pointer.stack.pop()
                 pointer.stack.push(ord(self.get(x, y)))
             elif c == '&':
-                x = raw_input()
+                x = input()
                 try:
                     pointer.stack.push(int(x))
                 except ValueError:
                     pointer.stack.push(0)
             elif c == '~':
                 x = sys.stdin.read(1)
-                pointer.stack.push(ord(x))
+                if x == '':
+                    pointer.stack.push(-1)
+                else:
+                    pointer.stack.push(ord(x))
             elif c == 't':
                 new = Pointer()
                 new.x = pointer.x
@@ -384,10 +391,10 @@ class ConcurrentBefunge93Board(Befunge93Board):
                 color = 31 + i % 6
                 if os.name == "posix":
                     sys.stdout.write("\033[%dm" % color)
-                print "Pointer %d: x=%d y=%d dx=%d dy=%d stringmode=%s" % (i, pointer.x, pointer.y, pointer.dx, pointer.dy, pointer.stringmode)
+                print("Pointer %d: x=%d y=%d dx=%d dy=%d stringmode=%s" % (i, pointer.x, pointer.y, pointer.dx, pointer.dy, pointer.stringmode))
                 if os.name == "posix":
                     sys.stdout.write("\033[0m")
-            print "Board:"
+            print("Board:")
             for y in range(self.height):
                 for x in range(self.width):
                     c = self.get(x, y)
@@ -405,12 +412,12 @@ class ConcurrentBefunge93Board(Befunge93Board):
                 color = 31 + i % 6
                 if os.name == "posix":
                     sys.stdout.write("\033[%dm" % color)
-                print "Stack %d:" % i, pointer.stack._list
+                print("Stack %d:" % i, pointer.stack._list)
                 if os.name == "posix":
                     sys.stdout.write("\033[0m")
-            print "Output:"
+            print("Output:")
             self.debugstream.seek(0)
-            print self.debugstream.read()
+            print(self.debugstream.read())
             if self.debug_delay == -1:
                 sys.stdin.read(1)
             else:
